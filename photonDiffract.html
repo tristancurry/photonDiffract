@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+ <!-- Simulation of photons being filtered -->
+ <!-- Created by Tristan Miller, May 2016 -->
+ <!-- Download and then open in your browser. -->  
+<head>
+<meta charset="utf-8">
+<title>Photon Filtering</title>
+<style>
+
+
+
+
+
+
+</style>
+</head>
+
+<body>
+
+
+
+
+<script>
+
+
+function Pattern(){
+ //this is the object for storing the probability distribution associated with a photon's arrival direction/location of emission
+	
+	this.pDist = new Array(); //use numerical Kirchhoff formula to calculate the position probabilities at the screen/detector location
+}
+
+function Detector(){
+	//this will simply count photons. It can receive from any direction. It has a location and a counter built in. It also has a couple of representations that can be displayed.
+	
+	this.count = 0; //how many photons so far
+	this.posX = 0;
+	this.posY = 0;
+	
+	//probably these will be amassed into a 'screen', which will simply be an array of detectors!
+}
+
+function Source(){
+	//this is the object that emits light. It will have a brightness, an angular spread, and a location.
+}
+
+function Wall(){
+	//this is what the apertures are built from. It has a location. These will be amassed into Apertures, of which there may be more than one!
+}
+
+
+</script>
+</body>
+</html>
