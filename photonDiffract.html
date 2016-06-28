@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
- <!-- Simulation of photons being filtered -->
+ <!-- Simulation of photons being diffracted -->
  <!-- Created by Tristan Miller, June/July 2016 -->
  <!-- Download and then open in your browser. -->  
 <head>
 <meta charset="utf-8">
-<title>Photon Filtering</title>
+<title>Photon Diffraction</title>
 <style>
 
 
@@ -22,6 +22,11 @@
 
 
 <script>
+'use strict';
+
+
+
+
 
 
 function Pattern(){
@@ -30,40 +35,36 @@ function Pattern(){
 	this.pDist = new Array(); //use numerical Kirchhoff formula to calculate the position probabilities at the screen/detector location
 }
 
-function Detector(){
+function Detector(x,y){
 	//this will simply count photons. It can receive from any direction. It has a location and a counter built in. It also has a couple of representations that can be displayed.
 	
 	this.count = 0; //how many photons so far
-	this.posX = 0;
-	this.posY = 0;
+	this.posX = x;
+	this.posY = y;
 	
 	//probably these will be amassed into a 'screen', which will simply be an array of detectors!
 }
 
-function Source(){
-	//this is the object that emits light. It will have a brightness, an angular spread, and a location.
+function Source(x,y,b, lambda, ang_min, ang_max){
+this.posX = x;
+this.posY = y;
+this.ang_min = ang_min;
+this.ang_max = ang_max;
+this.brightness = b;
+this.lambda = lambda;
+
+	//this is the object that emits light. It will have a brightness, a wavenumber, an angular spread, and a location. It will have an 'emit' method.
 }
 
-function Wall(){
+function ApertureElement(x,y){
+this.posX = x;
+this.posY = y;
 	//this is what the apertures are built from. It has a location. These will be amassed into Apertures, of which there may be more than one!
 }
 
 
 
-/** ComplexNumber class
- * 
- * The complex number class allows us to do complex math. It accepts a real and imaginary part
- * 
- * @author Jan Hartigan
- * @inspiration http://www.java2s.com/Code/JavaScript/Language-Basics/Complexclasstorepresentcomplexnumbers.htm
- * @version 1.0.0 (2011-03-08)
- */
 
-
-/**
- * @param Number	real
- * @param Number	imaginary
- */
 function ComplexNumber(real,imaginary) {
 	this.real = real;
 	this.imaginary = imaginary;
@@ -83,14 +84,7 @@ ComplexNumber.prototype = {
 	 */
 	imaginary: 0,
 	
-	/**
-	 * The add operation which sums the real and complex parts separately
-	 * 
-	 * @param ==> 	If there is one argument, assume it's a ComplexNumber
-	 * 				If there are two arguments, assume the first is the real part and the second is the imaginary part
-	 * 
-	 * @return ComplexNumber
-	 */
+
 	add: function() {
 	    if(arguments.length == 1)
 	        return new ComplexNumber(this.real + arguments[0].real, this.imaginary + arguments[0].imaginary);
@@ -98,14 +92,7 @@ ComplexNumber.prototype = {
 	        return new ComplexNumber(this.real + arguments[0], this.imaginary + arguments[1]);
 	},
 	
-	/**
-	 * The subtract operation which subtracts the real and complex parts from one another separately
-	 * 
-	 * @param ==> 	If there is one argument, assume it's a ComplexNumber
-	 * 				If there are two arguments, assume the first is the real part and the second is the imaginary part
-	 * 
-	 * @return ComplexNumber
-	 */
+	
 	sub: function() {
 	    if(arguments.length == 1)
 	        return new ComplexNumber(this.real - arguments[0].real, this.imaginary - arguments[0].imaginary);
@@ -113,14 +100,7 @@ ComplexNumber.prototype = {
 	        return new ComplexNumber(this.real - arguments[0], this.imaginary - arguments[1]);
 	},
 	
-	/**
-	 * The multiplication operation which multiplies two complex numbers
-	 * 
-	 * @param ==> 	If there is one argument, assume it's a ComplexNumber
-	 * 				If there are two, assume the first is the real part and the second is the imaginary part
-	 * 
-	 * @return ComplexNumber
-	 */
+
 	mult: function() {
 	    var multiplier = arguments[0];
 		
@@ -131,24 +111,100 @@ ComplexNumber.prototype = {
 								this.real * multiplier.imaginary + this.imaginary * multiplier.real);
 	},
 	
-	/**
-	 * The modulus of a complex number
-	 * 
-	 * @return number
-	 */
+
 	mod: function() {
 	    return Math.sqrt(this.real * this.real + this.imaginary * this.imaginary);
 	},
 	
-	/**
-	 * The string representation of a complex number (e.g. 4 + 3i)
-	 * 
-	 * @return String
-	 */
+	
 	toString: function() {
 	    return this.real + " + " + this.imaginary + "i";
 	}
 };
+
+
+
+var mySource = new Source(0, 500, 3, 10, -0.5, 0.5);
+var myApEl = new ApertureElement(20, 20);
+var myDet = new Detector(50, 10);
+
+var myAperture = new Array();
+var myScreen = new Array();
+var probabilitudes = new Array();
+
+for(var i = 0; i < 20; i++){
+	var thisApEl = new ApertureElement(1000, 4990 + i);
+	myAperture.push(thisApEl);
+
+	
+}
+
+for(var i = 0; i < 10000; i++){
+
+	var thisDetEl = new Detector(1100, i);
+	myScreen.push(thisDetEl);
+	
+}
+
+
+
+for(var i = 0; i < myScreen.length; i++){
+var me = computeTotalAmplitude(mySource, myScreen[i], myAperture);
+var ampy = Math.pow(me.mod(),2);
+probabilitudes.push(ampy);
+
+}
+
+
+
+console.log(probabilitudes);
+
+
+
+
+function computeDistance(x, y){
+
+return(Math.sqrt(x*x + y*y));
+
+}
+
+
+
+function computeAmplitude(srcEl, apEl, detEl){ //this is the one that integrates over the aperture for a detector and a source
+
+var amplitude = new ComplexNumber(0,0);
+
+var r = computeDistance(srcEl.posX - apEl.posX, srcEl.posY - apEl.posY);
+var s = computeDistance(srcEl.posX - apEl.posX, srcEl.posY - apEl.posY);
+var k = 2*Math.PI/srcEl.lambda;
+var dy = 2;
+
+var ang_nr = Math.atan(Math.abs((srcEl.posY - apEl.posY)/(srcEl.posX - apEl.posX)));
+
+var ang_ns = Math.atan(Math.abs((detEl.posY - apEl.posY)/(detEl.posX - apEl.posX)));
+
+
+amplitude = amplitude.add(Math.cos(k*(r + s)), Math.sin(k*(r + s)));
+amplitude = amplitude.mult(Math.cos(ang_nr) - Math.cos(ang_ns), 0);
+amplitude = amplitude.mult(dy/(r*s), 0);
+
+return(amplitude);
+}
+
+
+function computeTotalAmplitude(srcEl, detEl, ap){
+	var totalAmp = new ComplexNumber(0,0);
+	for(var i = 0; i < ap.length; i++){
+	
+		var thisAmp = computeAmplitude(srcEl, ap[i], detEl);
+		totalAmp = totalAmp.add(thisAmp);
+	}
+totalAmp = totalAmp.mult(0,-1);
+return(totalAmp);
+}
+
+
+
 
 
 </script>
