@@ -124,7 +124,7 @@ ComplexNumber.prototype = {
 
 
 
-var mySource = new Source(0, 500, 3, 10, -0.5, 0.5);
+var mySource = new Source(0, 500, 3, 50, -0.5, 0.5);
 var myApEl = new ApertureElement(20, 20);
 var myDet = new Detector(50, 10);
 
@@ -132,16 +132,16 @@ var myAperture = new Array();
 var myScreen = new Array();
 var probabilitudes = new Array();
 
-for(var i = 0; i < 20; i++){
-	var thisApEl = new ApertureElement(1000, 4990 + i);
+for(var i = 0; i < 2000; i++){
+	var thisApEl = new ApertureElement(1000,49000 + i);
 	myAperture.push(thisApEl);
 
 	
 }
 
-for(var i = 0; i < 10000; i++){
+for(var i = 0; i < 1000; i++){
 
-	var thisDetEl = new Detector(1100, i);
+	var thisDetEl = new Detector(1100, 100*i);
 	myScreen.push(thisDetEl);
 	
 }
@@ -152,12 +152,11 @@ for(var i = 0; i < myScreen.length; i++){
 var me = computeTotalAmplitude(mySource, myScreen[i], myAperture);
 var ampy = Math.pow(me.mod(),2);
 probabilitudes.push(ampy);
-
+console.log(ampy);
 }
 
 
 
-console.log(probabilitudes);
 
 
 
@@ -200,6 +199,7 @@ function computeTotalAmplitude(srcEl, detEl, ap){
 		totalAmp = totalAmp.add(thisAmp);
 	}
 totalAmp = totalAmp.mult(0,-1);
+totalAmp = totalAmp.mult(1000000, 0);
 return(totalAmp);
 }
 
