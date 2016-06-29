@@ -19,7 +19,7 @@
 <body>
 
 
-
+<canvas id="mainScreen" height = "600" width = "600"></canvas>
 
 <script>
 'use strict';
@@ -122,9 +122,18 @@ ComplexNumber.prototype = {
 	}
 };
 
+var requestAnimationFrame = window.requestAnimationFrame || 
+                            window.mozRequestAnimationFrame || 
+                            window.webkitRequestAnimationFrame || 
+                            window.msRequestAnimationFrame;
+							
+var mainCanvas = document.querySelector("#mainScreen");
+var mainContext = mainCanvas.getContext("2d");
 
+var mainWidth = mainCanvas.width;
+var mainHeight = mainCanvas.height;
 
-var mySource = new Source(0, 500, 3, 50, -0.5, 0.5);
+var mySource = new Source(0, 500000, 3, 1, -0.5, 0.5);
 var myApEl = new ApertureElement(20, 20);
 var myDet = new Detector(50, 10);
 
@@ -132,8 +141,8 @@ var myAperture = new Array();
 var myScreen = new Array();
 var probabilitudes = new Array();
 
-for(var i = 0; i < 2000; i++){
-	var thisApEl = new ApertureElement(1000,49000 + i);
+for(var i = 0; i < 5000; i++){
+	var thisApEl = new ApertureElement(299900,497500 + i);
 	myAperture.push(thisApEl);
 
 	
@@ -141,7 +150,7 @@ for(var i = 0; i < 2000; i++){
 
 for(var i = 0; i < 1000; i++){
 
-	var thisDetEl = new Detector(1100, 100*i);
+	var thisDetEl = new Detector(300000, 1000*i);
 	myScreen.push(thisDetEl);
 	
 }
@@ -174,7 +183,7 @@ function computeAmplitude(srcEl, apEl, detEl){ //this is the one that integrates
 var amplitude = new ComplexNumber(0,0);
 
 var r = computeDistance(srcEl.posX - apEl.posX, srcEl.posY - apEl.posY);
-var s = computeDistance(srcEl.posX - apEl.posX, srcEl.posY - apEl.posY);
+var s = computeDistance(detEl.posX - apEl.posX, detEl.posY - apEl.posY);
 var k = 2*Math.PI/srcEl.lambda;
 var dy = 2;
 
