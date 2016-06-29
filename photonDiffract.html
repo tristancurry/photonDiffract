@@ -144,7 +144,7 @@ var probabilitudes = new Array();
 
 
 for(var i = 0; i < 2000; i++){
-	var thisApEl = new ApertureElement(10000,499990 + 0.001*i);
+	var thisApEl = new ApertureElement(500,499990 + 0.01*i);
 
 	myAperture.push(thisApEl);
 
@@ -154,7 +154,7 @@ for(var i = 0; i < 2000; i++){
 for(var i = 0; i < 1000; i++){
 
 
-	var thisDetEl = new Detector(100000, 1000*i);
+	var thisDetEl = new Detector(2000, 1000*i);
 
 	myScreen.push(thisDetEl);
 	
